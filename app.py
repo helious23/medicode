@@ -3,7 +3,7 @@ from api import search_drugs, get_drug_details
 
 st.set_page_config(page_title="의약품 검색기", layout="centered")
 
-st.title("💊 의약품 검색 서비스")
+st.title("💊 의약품 바코드 검색")
 
 query = st.text_input("의약품 이름을 입력하세요")
 
@@ -23,8 +23,11 @@ if query:
     if selected:
         edi_code = options[selected]
         with st.spinner("📦 바코드 정보를 불러오는 중입니다..."):
-            barcode = get_drug_details(edi_code) or "정보 없음"
-        st.subheader("📦 바코드")
-        for code in barcode.split(","):
-            code = code.strip()
-            st.code(code, language="text")
+            data = get_drug_details(edi_code) or []
+
+        if isinstance(data, list) and all(isinstance(item, dict) for item in data):
+            st.subheader("📦 바코드 상세 목록")
+            st.table(data)
+        else:
+            st.subheader("📦 바코드")
+            st.write("정보 없음")
