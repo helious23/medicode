@@ -1,13 +1,21 @@
-import requests
 import os
-from dotenv import load_dotenv
 import requests
+from dotenv import load_dotenv
+import streamlit as st
 from bs4 import BeautifulSoup as bs
 
 load_dotenv()
 
-EDI_API_KEY = os.getenv("EDI_API_KEY")
-PRODUCT_API_KEY = os.getenv("PRODUCT_API_KEY")
+EDI_API_KEY = (
+    st.secrets["edi_api_key"]
+    if "edi_api_key" in st.secrets
+    else os.getenv("EDI_API_KEY")
+)
+PRODUCT_API_KEY = (
+    st.secrets["product_api_key"]
+    if "product_api_key" in st.secrets
+    else os.getenv("PRODUCT_API_KEY")
+)
 
 LIST_URL = "http://apis.data.go.kr/B551182/dgamtCrtrInfoService1.2/getDgamtList"
 DETAIL_URL = (

@@ -1,6 +1,5 @@
 import streamlit as st
 from api import search_drugs, get_drug_details
-from utils import copy_to_clipboard
 
 st.set_page_config(page_title="의약품 검색기", layout="centered")
 
