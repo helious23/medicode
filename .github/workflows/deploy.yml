@@ -1,0 +1,26 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 13.125.46.138 >> ~/.ssh/known_hosts
+
+      - name: Deploy code to EC2
+        run: |
+          rsync -avz --exclude '.git' -e "ssh -i ~/.ssh/deploy_key" ./ ubuntu@13.125.46.138:/home/ubuntu/medicode
+          ssh -i ~/.ssh/deploy_key ubuntu@13.125.46.138 "cd /home/ubuntu/medicode && nohup streamlit run app.py --server.port 8501 > streamlit.log 2>&1 &"
