@@ -8,19 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H 13.125.46.138 >> ~/.ssh/known_hosts
-
-      - name: Deploy code to EC2
-        run: |
-          rsync -avz --exclude '.git' -e "ssh -i ~/.ssh/deploy_key" ./ ubuntu@13.125.46.138:/home/ubuntu/medicode
-          ssh -i ~/.ssh/deploy_key ubuntu@13.125.46.138 "cd /home/ubuntu/medicode && nohup streamlit run app.py --server.port 8501 > streamlit.log 2>&1 &"
+      - name: SSH to EC2 and pull latest changes
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/medicode
+            git pull origin main
+            pkill streamlit || true
+            nohup streamlit run app.py --server.port 8501 > ~/streamlit.log 2>&1 &
