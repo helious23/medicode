@@ -1,9 +1,14 @@
 import streamlit as st
+from PIL import Image
 from api import search_drugs, get_drug_details
 
 st.set_page_config(page_title="의약품 검색기", layout="centered")
 
-st.title("💊 의약품 바코드 검색")
+
+logo = Image.open("assets/logo.PNG")
+st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+st.image(logo, width=800)
+st.markdown("</div>", unsafe_allow_html=True)
 
 query = st.text_input("의약품 이름을 입력하세요")
 
