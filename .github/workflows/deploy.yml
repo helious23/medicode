@@ -22,4 +22,5 @@ jobs:
             cd ~/medicode
             git pull origin main
             pkill streamlit || true
+            source venv/bin/activate
             nohup streamlit run app.py --server.port 8501 > ~/streamlit.log 2>&1 &
